@@ -15,15 +15,24 @@ import java.util.HashSet;
 class Bwt
 {
 	private static HashSet<Long> rndSet;
-	private static final int BLOCKSIZE = 16;
-	private static final int BITLENGTH = 32;
-	private static final int WORDCOUNT = 1000000;
-	private static final int BLOCKCOUNT = BITLENGTH / BLOCKSIZE;
+	private static int BLOCKSIZE;
+	private static int BITLENGTH;
+	private static int WORDCOUNT;
+	private static int BLOCKCOUNT;
 	
 	
   public static void main (String[] args)
   {
 
+	if(args.length != 3)
+		System.exit(1);
+	
+	BLOCKSIZE = Integer.parseInt(args[0]);
+	BITLENGTH = Integer.parseInt(args[1]);
+	WORDCOUNT = Integer.parseInt(args[2]);
+	
+	BLOCKCOUNT = BITLENGTH / BLOCKSIZE;
+	  
 	rndSet  = new HashSet<Long>();
 
 	String[] allWords = randomWords(BITLENGTH,WORDCOUNT);
