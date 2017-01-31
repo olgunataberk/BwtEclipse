@@ -6,40 +6,50 @@
   // the Burrows Wheeler Transform used to improve compression.
   // This version is fixed to compress "The wheels on the bus"
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.PrintWriter;
 import java.util.HashSet;
 
 class Bwt
 {
 	private static HashSet<Long> rndSet;
-
+	private static final int BLOCKSIZE = 16;
+	private static final int BITLENGTH = 32;
+	private static final int WORDCOUNT = 1000000;
+	private static final int BLOCKCOUNT = BITLENGTH / BLOCKSIZE;
+	
+	
   public static void main (String[] args)
   {
 
-		rndSet  = new HashSet<Long>();
+	rndSet  = new HashSet<Long>();
 
-	String[] allWords = randomWords(32,1000000);
+	String[] allWords = randomWords(BITLENGTH,WORDCOUNT);
 	String[] rotated = new String[allWords.length];
 
     for(int i = 0 ; i < allWords.length ; i++){
 
-    	String text = allWords[i];
-    	int SIZE = text.length();
-
-
-        String[] rotations = new String[SIZE];
-        String result = "";
-
-    // First generate all rotations
-        generateRotations(text, rotations);
-
-    // Next sort those strings
-        sortStrings(rotations, SIZE);
-
-    // Finally take the last character of each sorted string to
-    // get the Burrows-Wheeler transform
-        result = lastChars(rotations, SIZE);
-        rotated[i] = result;
-
+    	String textCmplete = allWords[i];
+    	String transformed = "";
+    	
+    		for(int j = 0 ; j < BLOCKCOUNT ; j++){
+    			String text = textCmplete.substring(j*BLOCKSIZE,j*BLOCKSIZE+BLOCKSIZE);
+		    	int SIZE = text.length();
+		        String[] rotations = new String[SIZE];
+		        String result = "";
+		    // First generate all rotations
+		        generateRotations(text, rotations);
+		    // Next sort those strings
+		        sortStrings(rotations, SIZE);
+		    // Finally take the last character of each sorted string to
+		    // get the Burrows-Wheeler transform
+		        result = lastChars(rotations, SIZE);
+		        transformed += result;
+    		}
+    		
+        rotated[i] = transformed;
     }
 
     //compute(allWords, rotated);
@@ -178,11 +188,28 @@ class Bwt
 			 neg_total += (rotaCost-origCost);
 		 }
 	 }
-	 System.out.println("Total amount of string pairs with reduced bit flips = "+positive_count
+	 System.out.println("Using blocks of size "+BLOCKSIZE+"\nTotal amount of string pairs with reduced bit flips = "+positive_count
 			 			+"\nWith "+ pos_total*1.0/positive_count+" average blf. "+pos_total+" amount of bits less flipped in total.");
 	 System.out.println("Total amount of string pairs with increased bit flips = "+negative_count
 	 					+"\nWith "+ neg_total*1.0/negative_count+" average bmf. "+neg_total+" amount of bits more flipped in total.");
 	 System.out.println("Over a total amount of "+total+" unique word pairs with "+total_flips+" total amount of flips, "+ (total-positive_count-negative_count)+" had the same cost after transformation.");
+	 
+	 try {
+		File dmpFile = new File("bitwt-"+BLOCKSIZE+"-"+BITLENGTH+".dmp");
+		FileOutputStream fos = new FileOutputStream(dmpFile,true);
+		PrintWriter pw = new PrintWriter(fos);
+		pw.print("TP " + total +
+				"\nTF " + total_flips +
+				"\nPC " + positive_count +
+				"\nNC " + negative_count +
+				"\n");
+		pw.print("^^^^^^^^^^^\n");
+		pw.close();
+	} catch (FileNotFoundException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
+	 
  }
 
  public static void compute(String[] orig, String[] rota){
