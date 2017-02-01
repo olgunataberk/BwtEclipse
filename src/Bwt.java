@@ -42,8 +42,9 @@ class Bwt
 
     	String textCmplete = allWords[i];
     	String transformed = "";
-
+		//Divide bit string into blocks
     		for(int j = 0 ; j < BLOCKCOUNT ; j++){
+			//rotate one block
     			String text = textCmplete.substring(j*BLOCKSIZE,j*BLOCKSIZE+BLOCKSIZE);
 		    	int SIZE = text.length();
 		        String[] rotations = new String[SIZE];
@@ -55,6 +56,7 @@ class Bwt
 		    // Finally take the last character of each sorted string to
 		    // get the Burrows-Wheeler transform
 		        result = lastChars(rotations, SIZE);
+			//append rotated block to the new string
 		        transformed += result;
     		}
 
@@ -155,6 +157,7 @@ class Bwt
     a[i+1] = t;
  }
 
+  //Function for generating random bSize bit words.
   public static String[] slowRandomWords(int bSize,int wCount){
  	 String[] ret = new String[wCount];
  	 for(int i = 0 ; i < wCount ; i++){
@@ -169,7 +172,7 @@ class Bwt
  	 }
  	 return ret;
   }
-
+ //Function for generating random bSize bit words but faster.
  public static String[] randomWords(int bSize,int wCount){
 	 String[] ret = new String[wCount];
 	 for(int i = 0 ; i < wCount ; i++){
@@ -182,14 +185,15 @@ class Bwt
 	 }
 	 return ret;
  }
-
+ 
  public static String[] allWords(int bitSize){
 	 String[] ret = new String[(int) Math.pow(2,bitSize)];
 	 for(int i = 0 ; i < ret.length ; i++)
 		 ret[i] = String.format("%16s",Integer.toBinaryString(i));
 	 return ret;
  }
-
+ 
+ //Compute costs of 
  public static void computeLinear(String[] orig, String[] rota){
 	 long positive_count = 0,negative_count = 0;
 	 long pos_total = 0,neg_total = 0;
@@ -236,7 +240,7 @@ class Bwt
 	}
 
  }
-
+ /*
  public static void compute(String[] orig, String[] rota){
 	 long positive_count = 0,negative_count = 0;
 	 long pos_total = 0,neg_total = 0;
@@ -270,7 +274,7 @@ class Bwt
 	 					+"\nWith "+ neg_total*1.0/negative_count+" average bmf. "+neg_total+" amount of bits more flipped in total.");
 	 System.out.println("Over a total amount of "+total+" unique word pairs with "+total_flips+" total amount of flips, "+ (total-positive_count-negative_count)+" had the same cost after transformation.");
  }
-
+ */
  public static int cost(String b1,String b2){
 	 int ret = 0;
 	 for(int i = 0 ; i < b1.length() ; i++){
