@@ -19,20 +19,20 @@ class Bwt
 	private static int BITLENGTH;
 	private static int WORDCOUNT;
 	private static int BLOCKCOUNT;
-	
-	
+
+
   public static void main (String[] args)
   {
 
 	if(args.length != 3)
 		System.exit(1);
-	
+
 	BLOCKSIZE = Integer.parseInt(args[0]);
 	BITLENGTH = Integer.parseInt(args[1]);
 	WORDCOUNT = Integer.parseInt(args[2]);
-	
+
 	BLOCKCOUNT = BITLENGTH / BLOCKSIZE;
-	  
+
 	rndSet  = new HashSet<Long>();
 
 	String[] allWords = randomWords(BITLENGTH,WORDCOUNT);
@@ -42,7 +42,7 @@ class Bwt
 
     	String textCmplete = allWords[i];
     	String transformed = "";
-    	
+
     		for(int j = 0 ; j < BLOCKCOUNT ; j++){
     			String text = textCmplete.substring(j*BLOCKSIZE,j*BLOCKSIZE+BLOCKSIZE);
 		    	int SIZE = text.length();
@@ -57,7 +57,7 @@ class Bwt
 		        result = lastChars(rotations, SIZE);
 		        transformed += result;
     		}
-    		
+
         rotated[i] = transformed;
     }
 
@@ -202,7 +202,7 @@ class Bwt
 	 System.out.println("Total amount of string pairs with increased bit flips = "+negative_count
 	 					+"\nWith "+ neg_total*1.0/negative_count+" average bmf. "+neg_total+" amount of bits more flipped in total.");
 	 System.out.println("Over a total amount of "+total+" unique word pairs with "+total_flips+" total amount of flips, "+ (total-positive_count-negative_count)+" had the same cost after transformation.");
-	 
+
 	 try {
 		File dmpFile = new File("bitwt-"+BLOCKSIZE+"-"+BITLENGTH+".dmp");
 		FileOutputStream fos = new FileOutputStream(dmpFile,true);
@@ -211,6 +211,7 @@ class Bwt
 				"\nTF " + total_flips +
 				"\nPC " + positive_count +
 				"\nNC " + negative_count +
+				"\nBLF " + pos_total +
 				"\n");
 		pw.print("^^^^^^^^^^^\n");
 		pw.close();
@@ -218,7 +219,7 @@ class Bwt
 		// TODO Auto-generated catch block
 		e.printStackTrace();
 	}
-	 
+
  }
 
  public static void compute(String[] orig, String[] rota){
