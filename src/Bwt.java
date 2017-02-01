@@ -163,7 +163,7 @@ class Bwt
 		 		rnd = (long)(Math.random()*Math.pow(2,bSize));
 		 rndSet.add(rnd);
 		 //System.out.println(rnd);
-		 ret[i] = String.format(("%"+bSize+"s"),Long.toBinaryString(rnd));
+		 ret[i] = String.format(("%"+bSize+"s"),Long.toBinaryString(rnd)).replace(' ','0');
 	 }
 	 return ret;
  }
