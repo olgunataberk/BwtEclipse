@@ -35,7 +35,7 @@ class Bwt
 
 	rndSet  = new HashSet<Long>();
 
-	String[] allWords = randomWords(BITLENGTH,WORDCOUNT);
+	String[] allWords = slowRandomWords(BITLENGTH,WORDCOUNT);
 	String[] rotated = new String[allWords.length];
 
     for(int i = 0 ; i < allWords.length ; i++){
@@ -154,6 +154,21 @@ class Bwt
     a[i] = a[i+1];
     a[i+1] = t;
  }
+
+  public static String[] slowRandomWords(int bSize,int wCount){
+ 	 String[] ret = new String[wCount];
+ 	 for(int i = 0 ; i < wCount ; i++){
+ 		 String temp = "";
+ 		 for(int j = 0 ; j < bSize ; j++){
+ 			 if(Math.random()>0.5)
+ 				 temp += "1";
+ 			 else
+ 				 temp += "0";
+ 		 }
+ 		 ret[i] = temp;
+ 	 }
+ 	 return ret;
+  }
 
  public static String[] randomWords(int bSize,int wCount){
 	 String[] ret = new String[wCount];
