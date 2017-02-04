@@ -46,7 +46,8 @@ class Bwt
     		for(int j = 0 ; j < BLOCKCOUNT ; j++){
 			//rotate one block
     			String text = textCmplete.substring(j*BLOCKSIZE,j*BLOCKSIZE+BLOCKSIZE);
-		    	int SIZE = text.length();
+				text += "$";
+				int SIZE = text.length();
 		        String[] rotations = new String[SIZE];
 		        String result = "";
 		    // First generate all rotations
@@ -56,6 +57,7 @@ class Bwt
 		    // Finally take the last character of each sorted string to
 		    // get the Burrows-Wheeler transform
 		        result = lastChars(rotations, SIZE);
+				int eof = findEof(rotations);
 			//append rotated block to the new string
 		        transformed += result;
     		}
@@ -68,94 +70,6 @@ class Bwt
 		System.exit(0);
 }
 
-  // **********************************************
-  // Do run length encoding on a string
- public static String runLengthEncode(String source)
- {
-     String result = "";
-     int count = 1;
-     char current = source.charAt(0);
-
-     for(int i=1; i< source.length(); i++)
-     {
-        if (source.charAt(i)==current)
-           count = count + 1;
-        else
-        {
-            result = result + count + current;
-            count = 1;
-            current = source.charAt(i);
-        }
-     }
-     result = result + count + current;
-
-     return result;
- }
-
-
-  // **********************************************
-  // Generate all the rotations of a String, rotating one position at a time
- public static void generateRotations(String source, String[] s)
- {
-     s[0] = source;
-
-     for(int i=1; i< source.length(); i++)
-     {
-        s[i] = s[i-1].substring(1) + s[i-1].charAt(0);
-     }
- }
-
-  // **********************************************
-  // Get each of the last characters of an array of Strings
- public static String lastChars(String[] s, int SIZE)
- {
-     String result = "";
-
-     for(int i=0; i< SIZE; i++)
-     {
-        result = result + s[i].charAt(SIZE-1);
-     }
-
-     return result;
- }
-
-
-
-  // **********************************************
-  // Sort an array of strings
- public static void printStringArray(String[] a, int SIZE)
- {
-     for(int i=0; i< SIZE; i++)
-     {
-        System.out.println(a[i]);
-     }
-     System.out.println();
-
- }
-
-
-  // **********************************************
-  // Sort an array of strings
- public static void sortStrings(String[] a, int SIZE)
- {
-     for(int pass=0; pass<= SIZE-2; pass++)
-     {
-       for(int i=0; i<= SIZE-pass-2; i++)
-       {
-           if (a[i].compareTo(a[i+1])>0)
-               swap(a, i, i+1);
-       }
-     }
- }
-
-  // **********************************************
-  // Swap 2 given positions in an array of Strings
-  public static void swap(String[] a, int i, int j)
- {
-    String t = a[i];
-    a[i] = a[i+1];
-    a[i+1] = t;
- }
 
   //Function for generating random bSize bit words.
   public static String[] slowRandomWords(int bSize,int wCount){
@@ -185,15 +99,15 @@ class Bwt
 	 }
 	 return ret;
  }
- 
+
  public static String[] allWords(int bitSize){
 	 String[] ret = new String[(int) Math.pow(2,bitSize)];
 	 for(int i = 0 ; i < ret.length ; i++)
 		 ret[i] = String.format("%16s",Integer.toBinaryString(i));
 	 return ret;
  }
- 
- //Compute costs of 
+
+ //Compute costs of
  public static void computeLinear(String[] orig, String[] rota){
 	 long positive_count = 0,negative_count = 0;
 	 long pos_total = 0,neg_total = 0;
@@ -240,6 +154,25 @@ class Bwt
 	}
 
  }
+
+ public static int cost(String b1,String b2){
+	 int ret = 0;
+	 for(int i = 0 ; i < b1.length() ; i++){
+		 if(b1.charAt(i)!=b2.charAt(i))
+		 	ret++;
+	 }
+	 return ret;
+ }
+
+ public static int costDBI(String b1,String b2){
+	 int ret = 0;
+	 for(int i = 0 ; i < b1.length() ; i++){
+		 if(b1.charAt(i)!=b2.charAt(i))
+		 	ret++;
+	 }
+	 return ret>(b1.length()/2) ? b1.length()-ret : ret;
+ }
+
  /*
  public static void compute(String[] orig, String[] rota){
 	 long positive_count = 0,negative_count = 0;
@@ -275,22 +208,98 @@ class Bwt
 	 System.out.println("Over a total amount of "+total+" unique word pairs with "+total_flips+" total amount of flips, "+ (total-positive_count-negative_count)+" had the same cost after transformation.");
  }
  */
- public static int cost(String b1,String b2){
-	 int ret = 0;
-	 for(int i = 0 ; i < b1.length() ; i++){
-		 if(b1.charAt(i)!=b2.charAt(i))
-		 	ret++;
-	 }
-	 return ret;
- }
+   // **********************************************
+   // Do run length encoding on a string
+  public static String runLengthEncode(String source)
+  {
+      String result = "";
+      int count = 1;
+      char current = source.charAt(0);
 
- public static int costDBI(String b1,String b2){
-	 int ret = 0;
-	 for(int i = 0 ; i < b1.length() ; i++){
-		 if(b1.charAt(i)!=b2.charAt(i))
-		 	ret++;
-	 }
-	 return ret>(b1.length()/2) ? b1.length()-ret : ret;
- }
+      for(int i=1; i< source.length(); i++)
+      {
+         if (source.charAt(i)==current)
+            count = count + 1;
+         else
+         {
+             result = result + count + current;
+             count = 1;
+             current = source.charAt(i);
+         }
+      }
+      result = result + count + current;
 
+      return result;
+  }
+
+
+   // **********************************************
+   // Generate all the rotations of a String, rotating one position at a time
+  public static void generateRotations(String source, String[] s)
+  {
+      s[0] = source;
+
+      for(int i=1; i< source.length(); i++)
+      {
+         s[i] = s[i-1].substring(1) + s[i-1].charAt(0);
+      }
+  }
+
+   // **********************************************
+   // Get each of the last characters of an array of Strings
+  public static String lastChars(String[] s, int SIZE)
+  {
+      String result = "";
+
+      for(int i=0; i< SIZE; i++)
+      {
+         result = result + s[i].charAt(SIZE-1);
+      }
+
+      return result;
+  }
+
+
+
+   // **********************************************
+   // Sort an array of strings
+  public static void printStringArray(String[] a, int SIZE)
+  {
+      for(int i=0; i< SIZE; i++)
+      {
+         System.out.println(a[i]);
+      }
+      System.out.println();
+
+  }
+
+
+   // **********************************************
+   // Sort an array of strings
+  public static void sortStrings(String[] a, int SIZE)
+  {
+      for(int pass=0; pass<= SIZE-2; pass++)
+      {
+        for(int i=0; i<= SIZE-pass-2; i++)
+        {
+            if (a[i].compareTo(a[i+1])>0)
+                swap(a, i, i+1);
+        }
+      }
+  }
+
+  public static int findEof(String[] arr){
+	  for(int i = 0 ; i < arr.length() ; i++)
+	  	  if(arr.charAt(i) == '$')
+		  	return i;
+  }
+
+   // **********************************************
+   // Swap 2 given positions in an array of Strings
+   public static void swap(String[] a, int i, int j)
+  {
+     String t = a[i];
+     a[i] = a[i+1];
+     a[i+1] = t;
+  }
 }
