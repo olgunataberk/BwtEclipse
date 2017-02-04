@@ -42,6 +42,8 @@ class Bwt
 
     	String textCmplete = allWords[i];
     	String transformed = "";
+		String format = "%"+(1+(int)(log2(BLOCKSIZE)))+"s";
+		//System.out.println(format);
 		//Divide bit string into blocks
     		for(int j = 0 ; j < BLOCKCOUNT ; j++){
 			//rotate one block
@@ -57,11 +59,14 @@ class Bwt
 		    // Finally take the last character of each sorted string to
 		    // get the Burrows-Wheeler transform
 		        result = lastChars(rotations, SIZE);
-				int eof = findEof(rotations);
+				int eof = findEof(result);
+				String append = String.format(format,Integer.toBinaryString(eof)).replace(" ","0");
 			//append rotated block to the new string
 		        transformed += result;
+				transformed += append;
     		}
-
+		transformed = transformed.replace("$","");
+		//System.out.println(transformed);
         rotated[i] = transformed;
     }
 
@@ -70,6 +75,14 @@ class Bwt
 		System.exit(0);
 }
 
+  public static int log2(int a){
+	  int i = 0;
+	  while(a>1){
+	  	a = a>>1;
+		i++;
+	  }
+	  return i;
+  }
 
   //Function for generating random bSize bit words.
   public static String[] slowRandomWords(int bSize,int wCount){
@@ -288,10 +301,11 @@ class Bwt
       }
   }
 
-  public static int findEof(String[] arr){
+  public static int findEof(String arr){
 	  for(int i = 0 ; i < arr.length() ; i++)
 	  	  if(arr.charAt(i) == '$')
 		  	return i;
+	  return -5;
   }
 
    // **********************************************
