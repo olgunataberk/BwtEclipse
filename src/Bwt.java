@@ -42,35 +42,35 @@ class Bwt
 
     	String textCmplete = allWords[i];
     	String transformed = "";
-		String format = "%"+(1+(int)(log2(BLOCKSIZE)))+"s";
+		String format = "%"+((int)(log2(BLOCKSIZE)))+"s";
 		//System.out.println(format);
 		//Divide bit string into blocks
     		for(int j = 0 ; j < BLOCKCOUNT ; j++){
 			//rotate one block
     			String text = textCmplete.substring(j*BLOCKSIZE,j*BLOCKSIZE+BLOCKSIZE);
-				text += "$";
+				//text += "$";
 				int SIZE = text.length();
 		        String[] rotations = new String[SIZE];
 		        String result = "";
 		    // First generate all rotations
 		        generateRotations(text, rotations);
 		    // Next sort those strings
-		        sortStrings(rotations, SIZE);
+		        int eof = sortStrings(rotations, SIZE);
 		    // Finally take the last character of each sorted string to
 		    // get the Burrows-Wheeler transform
 		        result = lastChars(rotations, SIZE);
-				int eof = findEof(result);
-				String append = String.format(format,Integer.toBinaryString(eof)).replace(" ","0");
+				String append = String.format(format,Integer.toBinaryString(eof).substring(1)).replace(" ","0");
 			//append rotated block to the new string
 		        transformed += result;
 				transformed += append;
     		}
-		transformed = transformed.replace("$","");
-		//System.out.println(transformed);
+		//transformed = transformed.replace("$","");
+		//System.out.println(transformed.length());
         rotated[i] = transformed;
     }
 
     //compute(allWords, rotated);
+    	System.out.println(rotated[0].length());
 		computeLinear(allWords, rotated);
 		System.exit(0);
 }
@@ -289,16 +289,21 @@ class Bwt
 
    // **********************************************
    // Sort an array of strings
-  public static void sortStrings(String[] a, int SIZE)
+  public static int sortStrings(String[] a, int SIZE)
   {
+	  int lastIndex = SIZE-1;
       for(int pass=0; pass<= SIZE-2; pass++)
       {
         for(int i=0; i<= SIZE-pass-2; i++)
         {
-            if (a[i].compareTo(a[i+1])>0)
-                swap(a, i, i+1);
+            if (a[i].compareTo(a[i+1])>0){
+            	if(i+1 == lastIndex)
+            		lastIndex = i;
+            	swap(a, i, i+1);
+            }
         }
       }
+      return lastIndex;
   }
 
   public static int findEof(String arr){

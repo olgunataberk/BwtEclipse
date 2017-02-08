@@ -1,3 +1,7 @@
+mkdir results
+cp src/Bwt.java results/
+cd results/
+
 javac Bwt.java
 
 JOBCOUNT=$1;
@@ -9,3 +13,5 @@ for((i = 0 ; i < JOBCOUNT ; i++))
 do
 	java Bwt "$BLOCKSIZE" "$BITLENGTH" "$WORDCOUNT"
 done
+
+cd ..
