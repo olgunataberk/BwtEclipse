@@ -10,6 +10,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.HashSet;
 
 class Bwt
@@ -113,6 +114,31 @@ class Bwt
 	 return ret;
  }
 
+ //https://en.wikipedia.org/wiki/Lyndon_word
+ //incomplete
+ public static String[] lyndonFactorize(String word){
+	 int m = 1, k = 0;
+	 int N = word.length();
+	 ArrayList<String> factorization = new ArrayList<>();
+	 String buffer = "";
+	 while(m < N && k < N){
+		 if(word.charAt(k) == word.charAt(m)){
+			 buffer += word.charAt(m++);
+			 k++;
+		 }else if(word.charAt(k) < word.charAt(m)){
+			 m++; k = 0;
+		 }else{
+			 factorization.add(buffer.substring(0,m-k+1));
+			 buffer = buffer.substring(m-k+1);
+			 word = word.substring(m-k+1);
+			 m = 1; k = 0;
+			 N = word.length();
+		 }
+	 }
+	 System.out.println(factorization.toString());
+	 return null;
+ }
+ 
  public static String[] allWords(int bitSize){
 	 String[] ret = new String[(int) Math.pow(2,bitSize)];
 	 for(int i = 0 ; i < ret.length ; i++)
