@@ -115,28 +115,33 @@ class Bwt
  }
 
  //https://en.wikipedia.org/wiki/Lyndon_word
- //incomplete
+ //returns an array of lyndon words that form the string "word"
  public static String[] lyndonFactorize(String word){
-	 int m = 1, k = 0;
-	 int N = word.length();
-	 ArrayList<String> factorization = new ArrayList<>();
-	 String buffer = "";
-	 while(m < N && k < N){
-		 if(word.charAt(k) == word.charAt(m)){
-			 buffer += word.charAt(m++);
-			 k++;
-		 }else if(word.charAt(k) < word.charAt(m)){
-			 m++; k = 0;
-		 }else{
-			 factorization.add(buffer.substring(0,m-k+1));
-			 buffer = buffer.substring(m-k+1);
-			 word = word.substring(m-k+1);
-			 m = 1; k = 0;
-			 N = word.length();
+	 int k = 0;
+	 int len = word.length();
+	 ArrayList<String> factorizations = new ArrayList<>();
+	 int prevBreak = 0;
+	 while (k < len){
+		 int i = k + 1;
+		 int j = k + 2;
+		 while(true){
+			 if(j == len + 1 || word.charAt(j-1) < word.charAt(i-1)){
+				 while(k < i){
+					 factorizations.add(word.substring(prevBreak, k+j-i));
+					 prevBreak = k + j - i;
+					 k = k + j - i;
+				 }
+				 break;
+		 	 }else{
+		 		 if(word.charAt(j-1) > word.charAt(i-1))
+		 			 i = k + 1;
+		 		 else
+		 			 i = i + 1;
+		 		 j = j + 1;
+		 	 }
 		 }
 	 }
-	 System.out.println(factorization.toString());
-	 return null;
+	 return factorizations.toArray(new String[]{});
  }
  
  public static String[] allWords(int bitSize){
