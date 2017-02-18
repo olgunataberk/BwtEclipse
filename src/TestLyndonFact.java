@@ -2,18 +2,18 @@ import java.util.ArrayList;
 
 public class TestLyndonFact {
 
-	private static String testStr = "101010101010";
+	private static String testStr = "banana^";
 	
 	public static void main(String[] args){
 		String[] arr = lyndonFactorize(testStr);
 		for(int i = 0 ; i < arr.length ; i++){
-			System.out.println(arr[i]);
+			//System.out.println(arr[i]);
 		}
 		String[] rows = generateRows(arr,testStr.length());
 		for(int i = 0 ; i < rows.length ; i++){
 			System.out.println(rows[i]);
 		}
-		System.out.println(rows.length);
+		//System.out.println(rows.length);
 	}
 	
 	 //https://en.wikipedia.org/wiki/Lyndon_word
@@ -51,14 +51,15 @@ public class TestLyndonFact {
 		 int r = 0;
 		 for(int i = 0 ; i < lw.length ; i++){
 			 String currLw = lw[i];
-			 int rpTime = size/currLw.length() + 1;
+			 //int rpTime = size/currLw.length() + 1;
 			 //System.out.println("LYWORD : "+currLw+" RPTIME: "+rpTime);
-			 String lwExtended = repeat(currLw,rpTime);
-			 lwExtended = lwExtended.substring(0,size);
+			 //String lwExtended = repeat(currLw,rpTime);
+			 //lwExtended = lwExtended.substring(0,size);
+			 //System.out.println("currLw: "+currLw+ " lwExtended: " + lwExtended);
 			 for(int j = 0 ; j < currLw.length() ; j++){
 				 //System.out.println(lwExtended);
-				 rows[r++] = lwExtended;
-				 lwExtended = rotateOnce(lwExtended);
+				 rows[r++] = currLw;
+				 currLw = rotateOnce(currLw);
 			 }
 		 }
 		 return rows;
@@ -78,6 +79,7 @@ public class TestLyndonFact {
 	 
 	 public static String rotateOnce(String a){
 		 char first = a.charAt(0);
+		 //System.out.println("orig: "+ a+ " rotated: "+ (a.substring(1) + first));
 		 return a.substring(1) + first;
 	 }
 	 

@@ -38,7 +38,7 @@ class Bwt
 
 	String[] allWords = slowRandomWords(BITLENGTH,WORDCOUNT);
 	String[] rotated = new String[allWords.length];
-
+	/*
     for(int i = 0 ; i < allWords.length ; i++){
 
     	String textCmplete = allWords[i];
@@ -72,6 +72,7 @@ class Bwt
 
     //compute(allWords, rotated);
     	System.out.println(rotated[0].length());
+    	*/
 		computeLinearLW(allWords);
 		System.exit(0);
 }
@@ -155,17 +156,23 @@ class Bwt
  //Encode by using a bijective variant of BWT
  //Using whole words length as block size.
  public static void computeLinearLW(String[] orig){
-	 int size = orig[0].length();
-	 String[] rotated = new String[orig.length];
-	 int j = 0;
-	 for(int i = 0 ; i < orig.length ; i++){
-		 String[] lyndonWords = lyndonFactorize(orig[i]);
-		 String[] rotations = generateRows(lyndonWords,size);
-		 sortStrings(rotations, size);
-		 rotated[j] = lastChars(rotations,size);
-		 j++;
+	 
+	 String allRotated[] = new String[orig.length];
+	 
+	 for(int k = 0 ; k < orig.length ; k++){
+		 String textCmplete = orig[k];
+		 String rotationCmplete = "";
+		 for(int i = 0 ; i < BLOCKCOUNT ; i++){
+			 String subs = textCmplete.substring(i*BLOCKSIZE, i*BLOCKSIZE+BLOCKSIZE);
+			 int size = subs.length();
+			 String[] lyndonWords = lyndonFactorize(subs);
+			 String[] rotations = generateRows(lyndonWords,size);
+			 sortStrings(rotations, size);
+			 rotationCmplete += lastChars(rotations,size);
+		 }
+		 allRotated[k] = rotationCmplete;
 	 }
-	 computeLinear(orig, rotated);
+	 computeLinear(orig, allRotated);
  }
 
  public static String[] generateRows(String[] lw,int size){
@@ -173,12 +180,15 @@ class Bwt
 	 int r = 0;
 	 for(int i = 0 ; i < lw.length ; i++){
 		 String currLw = lw[i];
-		 int rpTime = size/currLw.length() + 1;
-		 String lwExtended = repeat(currLw,rpTime);
-		 lwExtended = lwExtended.substring(0,size);
+		 //int rpTime = size/currLw.length() + 1;
+		 //System.out.println("LYWORD : "+currLw+" RPTIME: "+rpTime);
+		 //String lwExtended = repeat(currLw,rpTime);
+		 //lwExtended = lwExtended.substring(0,size);
+		 //System.out.println("currLw: "+currLw+ " lwExtended: " + lwExtended);
 		 for(int j = 0 ; j < currLw.length() ; j++){
-			 rows[r++] = lwExtended;
-			 lwExtended = rotateOnce(lwExtended);
+			 //System.out.println(lwExtended);
+			 rows[r++] = currLw;
+			 currLw = rotateOnce(currLw);
 		 }
 	 }
 	 return rows;
@@ -347,7 +357,7 @@ class Bwt
 
       for(int i=0; i< SIZE; i++)
       {
-         result = result + s[i].charAt(SIZE-1);
+         result = result + s[i].charAt(s[i].length()-1);
       }
 
       return result;
